@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -9,27 +10,30 @@
 		<script>
 			function send(f){
 				
-				
-				
+				f.method="post";
 				f.action="update_visit.do";
 				f.submit();
 			}
-		</script>
+			
+			function delImg(f){
+				f.filename.value ="no_file";
+				
+				let img=document.getElementById("m_img");
+				img.style.display="none";
+				
+			}
+		</script>  
 	</head>
 	<body>
-		<form>
-			<table border="1">
+		<form enctype="multipart/form-data">
 				<input type="hidden" name="idx" value="${vo.idx }">
+				<input type="hidden" name="page" value="${param.page }">
+				<input type="hidden" name="filename" value="${vo.filename }">
+			<table border="1">
 				<tr>
 					<th>이름</th>
 					<td>
 						<input name="name" value="${vo.name }">
-					</td>
-				</tr>
-				<tr>	
-					<th>비밀번호</th>
-					<td>
-						<input name="pwd" value="${vo.pwd }">
 					</td>
 				</tr>
 				
@@ -39,6 +43,25 @@
 						<input name="content" value="${vo.content }">
 					</td>
 				</tr>
+
+				<tr>	
+					<th>비밀번호</th>
+					<td>
+						<input type="password" name="pwd" value="">
+					</td>
+				</tr>
+				
+				<tr>
+					<th>첨부파일</th>
+					<td>
+						<input type="file" name="photo">
+						<c:if test="${vo.filename ne 'no_file' }">
+						<img src="/visit/resources/upload/${vo.filename }" width="100" id="m_img">
+						</c:if>
+						<input type="button" value="X" onclick="delImg(this.form)">
+					</td>
+				</tr>
+				
 				
 				<tr>
 					<td colspan="2">

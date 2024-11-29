@@ -10,44 +10,78 @@
 		
 		<link rel="stylesheet" href="/visit/resources/css/visit.css">
 		
+		<script src="/visit/resources/js/httpRequest.js"></script>
+		
 		<script>
-			function del(f){
-				let checkpwd=f.pwd.value;
-				
-				if(checkpwd ==''){
-					alert("비밀번호를 입력하세요");
-					return;
-				}
-				if(checkpwd !='${list[0].pwd}'){
-					alert("비밀번호가 다릅니다.");
-					return;
-				}
-				if(!confirm ("삭제하시겠습니까?")){
-					return;
-				}
-				f.action="delete_visit.do";
-				f.submit();
-				
-			}
+        function del(f) {
+        	let pwd=f.pwd.value;
+        	let c_pwd=f.c_pwd.value;
+        	
+            if(c_pwd == ""){
+               alert("비밀번호를 입력하세요");
+               return;
+            }
+                    
+            let url = "delete.do";
+            let param = "idx=" + f.idx.value + "&page=" + f.page.value+"&pwd="+
+            pwd+"&c_pwd="+c_pwd+"&filename="+f.filename.value;
+            
+            sendRequest(url,param,resultFn,"POST");
+         }
+         
+         function resultFn() {
+            if( xhr.readyState == 4 && xhr.status == 200 ){
+               let data = xhr.responseText;
+               let json = (new Function('return ' + data))();
+               
+               if(!confirm("진짜삭제?")){
+                   return;
+                }
+               if(json[0].res ==="no_pwd"){
+            	   alert("비밀번호 불일치");
+            	   return;
+               }
+               if( json[0].res == "네" ){
+                  alert("삭제 성공");
+               }
+               else{
+                  alert("삭제 실패");
+               }
+               
+               location.href="list_visit.do?page=${param.page}";
+            }
+         }
 			
 			function upd(f){
+				let pwd=f.pwd.value;	
+				let c_pwd=f.c_pwd.value;
 				
-			let checkpwd=f.pwd.value;
+				let url="update_password_check.do";
+				let param="pwd="+pwd+"&c_pwd="+c_pwd;
+			
+				sendRequest(url,param,resPwd,"POST");
 				
-				if(checkpwd ==''){
-					alert("비밀번호를 입력하세요");
-					return;
-				}
-				if(checkpwd !='${list[0].pwd}'){
-					alert("비밀번호가 다릅니다.");
-					return;
-				}
-				if(!confirm ("수정 하시겠습니까?")){
-					return;
-				}
 				
+			/* 	f.method="POST";
 				f.action="update_form.do";
-				f.submit();
+				f.submit(); */
+			}
+			
+			function resPwd(){
+				if( xhr.readyState == 4 && xhr.status == 200 ){
+		        	let data = xhr.responseText.trim();
+		              
+	                if(data == 'no_pwd'){
+	            	    alert("비밀번호 불일치");
+	            	    return;
+	                }
+	                
+	        	    let f= document.getElementById("myf");
+	        	    
+	        	    f.method="POST";
+				    f.action="update_form.do";
+				    f.submit();
+				}
 			}
 		</script>
 	</head>
@@ -62,15 +96,28 @@
 		
 		<c:forEach var="vo" items="${list}">
 			<div class="visit_box">
-				<div class="type_content"><pre class="pr">${vo.content }</pre></div>
+				<div class="type_content">
+				<pre class="pr">${vo.content }</pre><br>
+					<!-- 이미지가 있는경우만 보여줄거임-->
+					<c:if test="${vo.filename ne 'no_file' }">
+						<img src="/visit/resources/upload/${vo.filename }" width="330">	
+						<!-- visit 경로 못가져오면 ${pageContext.request.contextPath}/resources/upload/ -->
+					</c:if>			
+				</div>
+				
 				<div class="type_name">${vo.name } (${vo.ip })</div>
 				<div class="type_regdate">${vo.regdate }</div>
 				
-				<form>
+				<form id="myf">
+					<input type="hidden" name="pwd" value="${vo.pwd }">
 					<input type="hidden" name="idx" value="${vo.idx }">
-					비밀번호 : <input type="password" name="pwd">
+					<input type="hidden" name="page" value="${param.page }">
+					<input type="hidden" name="filename" value="${vo.filename }">
+					
+					비밀번호 : <input type="password" name="c_pwd">
 					<input type="button" value="수정" onclick="upd(this.form)">
 					<input type="button" value="삭제" onclick="del(this.form)">
+					
 				</form>
 				
 			</div>

@@ -25,9 +25,12 @@
 	
  	<beans:bean class="controller.VisitController">
 		<beans:constructor-arg ref="visit_daoBean"/>
+		<beans:constructor-arg ref="bcp_bean"/> 
 	</beans:bean> 
 	
+ 	<context:annotation-config/>
  	
-	
+ 	
+	  
 	
 </beans:beans>

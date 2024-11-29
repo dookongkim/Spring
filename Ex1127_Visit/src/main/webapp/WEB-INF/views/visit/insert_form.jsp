@@ -17,7 +17,7 @@
 		
 	</head>
 	<body>
-		<form>
+		<form enctype="multipart/form-data">
 			<table border="1">
 				<tr>
 					<th>이름</th>
@@ -25,17 +25,22 @@
 						<input name="name">
 					</td>
 				</tr>
-				<tr>	
-					<th>비밀번호</th>
-					<td>
-						<input name="pwd" type="password">
-					</td>
-				</tr>
-				
 				<tr>
 					<th>내용</th>
 					<td>
 						<input name="content">
+					</td>
+				</tr>
+				<tr>
+					<th>첨부 파일</th>
+					<td>
+						<input type="file" name="photo">
+					</td>					
+				</tr>
+				<tr>	
+					<th>비밀번호</th>
+					<td>
+						<input name="pwd" type="password">
 					</td>
 				</tr>
 				
